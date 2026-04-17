@@ -1,0 +1,63 @@
+body {
+    background-color: #1a1a1a;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    overflow: hidden; /* Esconde a barra de rolagem */
+}
+
+/* Divide a tela no meio usando Flexbox */
+.tela-jogo {
+    display: flex;
+    height: 100vh;
+}
+
+.area-clique {
+    width: 65%; /* Ocupa 65% da tela */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 4px dashed #1b1b1b;
+}
+
+.area-loja {
+    width: 35%; /* Ocupa 35% da tela */
+    background-color: #222;
+    padding: 20px;
+}
+
+.placar {
+    font-size: 3rem;
+    color: #ffd700;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+#objeto-clique {
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+#imagem-principal {
+    border-radius: 50%;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+}
+
+/* =========================================
+   A MÁGICA DA ANIMAÇÃO DO +1
+   ========================================= */
+.texto-flutuante {
+    position: absolute;
+    color: #00ff2f; /* Cor verde neon */
+    font-weight: bold;
+    font-size: 2rem;
+    pointer-events: none; /* Ignora cliques em cima dele */
+    animation: subir 1s ease-out; /* Chama a animação abaixo */
+}
+
+/* Cria a trajetória: Sobe 100 pixels e vai sumindo (opacity 0) */
+@keyframes subir {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-100px); opacity: 0; }
+}
