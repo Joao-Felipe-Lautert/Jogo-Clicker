@@ -1,63 +1,143 @@
 body {
-    background-color: #1a1a1a;
-    color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    overflow: hidden; /* Esconde a barra de rolagem */
+  background-color: #121212;
+  color: white;
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  overflow: hidden;
 }
 
-/* Divide a tela no meio usando Flexbox */
 .tela-jogo {
-    display: flex;
-    height: 100vh;
+  display: flex;
+  height: 100vh;
 }
 
+/* Área de Clique */
 .area-clique {
-    width: 65%; /* Ocupa 65% da tela */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-right: 4px dashed #1b1b1b;
-}
-
-.area-loja {
-    width: 35%; /* Ocupa 35% da tela */
-    background-color: #222;
-    padding: 20px;
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  border-right: 2px solid #333;
 }
 
 .placar {
-    font-size: 3rem;
-    color: #ffd700;
-    font-weight: bold;
-    margin-bottom: 40px;
+  font-size: 4rem;
+  color: #ffd700;
+  font-weight: bold;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
 #objeto-clique {
-    cursor: pointer;
-    transition: transform 0.1s;
+  cursor: pointer;
+  transition: transform 0.1s;
 }
 
 #imagem-principal {
-    border-radius: 50%;
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+  max-width: 300px;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 30px rgba(0, 140, 255, 0.3));
 }
 
-/* =========================================
-   A MÁGICA DA ANIMAÇÃO DO +1
-   ========================================= */
+/* Painel de Save */
+.area-save {
+  background: #222;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+}
+
+.area-save input {
+  background: #333;
+  border: 1px solid #444;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.area-save button {
+  background: #008cff;
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Loja e Cards */
+.area-loja {
+  width: 35%;
+  background-color: #1a1a1a;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.status-automacao {
+  background: #252525;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 20px;
+  border: 1px solid #ffd700;
+}
+
+.card-upgrade {
+  background: #252525;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border-left: 5px solid #008cff;
+  transition: transform 0.2s;
+}
+
+.card-upgrade:hover {
+  transform: translateX(5px);
+  background: #2d2d2d;
+}
+
+.card-upgrade h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.card-upgrade p {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.card-upgrade button {
+  width: 100%;
+  padding: 10px;
+  background: #00ff2f;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.card-upgrade button:hover {
+  background: #00cc25;
+}
+
+/* Animação do +1 */
 .texto-flutuante {
-    position: absolute;
-    color: #00ff2f; /* Cor verde neon */
-    font-weight: bold;
-    font-size: 2rem;
-    pointer-events: none; /* Ignora cliques em cima dele */
-    animation: subir 1s ease-out; /* Chama a animação abaixo */
+  position: absolute;
+  color: #00ff2f;
+  font-weight: bold;
+  font-size: 1.5rem;
+  pointer-events: none;
+  animation: subir 1s ease-out forwards;
 }
 
-/* Cria a trajetória: Sobe 100 pixels e vai sumindo (opacity 0) */
 @keyframes subir {
-    0% { transform: translateY(0); opacity: 1; }
-    100% { transform: translateY(-100px); opacity: 0; }
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
 }

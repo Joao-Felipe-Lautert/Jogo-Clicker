@@ -1,82 +1,97 @@
+// --- VARIÁVEIS TÉCNICAS ---
 let pontos = 0;
-
-// Variáveis da Loja
 let pontosPorSegundo = 0;
-let custoUpg1 = 10;
 
-// Configuração do Firebase (COLE A SUA CHAVE AQUI DENTRO)
+// Preços iniciais
+let custoUpg1 = 10;
+let custoUpg2 = 100;
+let custoUpg3 = 2000;
+
+// --- CONFIGURAÇÃO FIREBASE ---
+// IMPORTANTE: Cole aqui os dados do seu console Firebase!
 const firebaseConfig = {
-  apiKey: "COLE_SUA_CHAVE_AQUI",
-  authDomain: "seu-projeto.firebaseapp.com",
-  projectId: "seu-projeto-id",
-  storageBucket: "seu-projeto.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:12345:web:abcde",
+  apiKey: "AIzaSyCz4mTfCtXcw1Sq9YakHgBXnrZ22FV8p1o",
+  authDomain: "jogo-clicker.firebaseapp.com",
+  projectId: "jogo-clicker",
+  storageBucket: "jogo-clicker.firebasestorage.app",
+  messagingSenderId: "597576726004",
+  appId: "1:597576726004:web:c2d818a2ab75ba52ee35a1",
 };
 
-// Inicia o Banco de Dados
 firebase.initializeApp(firebaseConfig);
 const banco = firebase.firestore();
 
+// --- SISTEMA DE CLIQUE ---
 function registrarClique(evento) {
-  // 1. Aumenta a pontuação
   pontos++;
-  document.getElementById("pontuacao").innerText = pontos;
+  atualizarTela();
 
-  // 2. Animação de pulsar a imagem principal
+  // Efeito Visual na imagem
   const img = document.getElementById("imagem-principal");
-  img.style.transform = "scale(0.90)";
+  img.style.transform = "scale(0.95)";
   setTimeout(() => {
     img.style.transform = "scale(1)";
   }, 100);
 
-  // 3. Chama a função do efeito especial
+  // Efeito flutuante
   criarParticula(evento);
 }
 
-// Função para criar o "+1" flutuante na ponta do mouse
 function criarParticula(evento) {
-  // Cria uma div nova
   let particula = document.createElement("div");
   particula.innerText = "+1💲";
   particula.className = "texto-flutuante";
-
-  // Pega as coordenadas X e Y de onde o mouse clicou
   particula.style.left = evento.clientX + "px";
   particula.style.top = evento.clientY + "px";
-
-  // Joga a div na tela
   document.body.appendChild(particula);
-
-  // Destrói a div depois de 1 segundo para não travar o PC
   setTimeout(() => {
     particula.remove();
   }, 1000);
 }
 
-// 1. Função de Comprar na Loja
+// --- LÓGICA DA LOJA (DESAFIO 1) ---
 function comprarUpgrade1() {
   if (pontos >= custoUpg1) {
-    pontos -= custoUpg1; // Paga o item
-    pontosPorSegundo += 1; // Ganha o poder
-    custoUpg1 = Math.floor(custoUpg1 * 1.5); // Aumenta o preço em 50% para a próxima compra
-
+    pontos -= custoUpg1;
+    pontosPorSegundo += 1;
+    custoUpg1 = Math.floor(custoUpg1 * 1.5);
     atualizarTela();
   } else {
     alert("Pontos insuficientes!");
   }
 }
 
-// 2. Atualiza os textos da tela
-function atualizarTela() {
-  document.getElementById("pontuacao").innerText = pontos;
-  document.getElementById("pontos-por-segundo").innerText = pontosPorSegundo;
-  document.getElementById(
-    "btn-upg1"
-  ).innerText = `Comprar (Custo: ${custoUpg1})`;
+function comprarUpgrade2() {
+  if (pontos >= custoUpg2) {
+    pontos -= custoUpg2;
+    pontosPorSegundo += 5;
+    custoUpg2 = Math.floor(custoUpg2 * 1.5);
+    atualizarTela();
+  } else {
+    alert("Pontos insuficientes!");
+  }
 }
 
-// 3. O Motor Automático (Roda infinitamente a cada 1 segundo)
+function comprarUpgrade3() {
+  if (pontos >= custoUpg3) {
+    pontos -= custoUpg3;
+    pontosPorSegundo += 50;
+    custoUpg3 = Math.floor(custoUpg3 * 1.5);
+    atualizarTela();
+  } else {
+    alert("Pontos insuficientes!");
+  }
+}
+
+function atualizarTela() {
+  document.getElementById("pontuacao").innerText = Math.floor(pontos);
+  document.getElementById("pontos-por-segundo").innerText = pontosPorSegundo;
+  document.getElementById("btn-upg1").innerText = `Comprar (${custoUpg1})`;
+  document.getElementById("btn-upg2").innerText = `Comprar (${custoUpg2})`;
+  document.getElementById("btn-upg3").innerText = `Comprar (${custoUpg3})`;
+}
+
+// --- MOTOR DO JOGO (GAME LOOP) ---
 setInterval(() => {
   if (pontosPorSegundo > 0) {
     pontos += pontosPorSegundo;
@@ -84,31 +99,33 @@ setInterval(() => {
   }
 }, 1000);
 
-// 4. Salvar na Nuvem (Firebase)
+// --- FIREBASE: SALVAR (DESAFIO 2) ---
 function salvarJogo() {
   let nome = document.getElementById("nome-jogador").value;
-
   if (nome === "") {
-    alert("Digite seu nome antes de salvar!");
+    console.log("Auto-save cancelado: Nome vazio.");
     return;
   }
 
-  // Cria o objeto com seus dados
   let dadosDoJogo = {
     jogador: nome,
     score: pontos,
     pps: pontosPorSegundo,
+    custos: [custoUpg1, custoUpg2, custoUpg3],
+    ultimaAtualizacao: new Date(),
   };
 
-  // Salva na Coleção "ranking", criando um Documento com o nome do jogador
   banco
     .collection("ranking")
     .doc(nome)
     .set(dadosDoJogo)
     .then(() => {
-      alert("Progresso salvo com sucesso!");
+      console.log("Progresso salvo na nuvem!");
     })
     .catch((erro) => {
-      console.error("Erro ao salvar:", erro);
+      console.error("Erro no Firebase:", erro);
     });
 }
+
+// AUTO-SAVE: Roda a cada 30 segundos
+setInterval(salvarJogo, 30000);
