@@ -21,6 +21,21 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const banco = firebase.firestore();
 
+// 1. CHAVES DO SERVIDOR MESTRE (DO PROFESSOR)
+const configProfessor = {
+  apiKey: "AIzaSyAFdzjq2mWquyDR6Gzb2ydkGNJWf0yCl40",
+  authDomain: "clicker-multiverso.firebaseapp.com",
+  projectId: "clicker-multiverso",
+  storageBucket: "clicker-multiverso.firebasestorage.app",
+  messagingSenderId: "875785026287",
+  appId: "1:875785026287:web:15b0c85034452ee7d1b91a",
+};
+
+// 2. INICIALIZAÇÃO DA SEGUNDA CONEXÃO
+// O segredo é passar o nome "Multiverso" para o navegador não confundir com o seu banco!
+const appMultiverso = firebase.initializeApp(configProfessor, "Multiverso");
+const bancoMultiverso = appMultiverso.firestore();
+
 // --- SISTEMA DE CLIQUE ---
 function registrarClique(evento) {
   pontos++;
@@ -99,38 +114,42 @@ setInterval(() => {
   }
 }, 1000);
 
-// --- FIREBASE: SALVAR (DESAFIO 2) ---
 function salvarJogo() {
   let nome = document.getElementById("nome-jogador").value;
-  if (nome === "") {
-    console.log("Auto-save cancelado: Nome vazio.");
+
+  // Trava de segurança: não salva sem nome e nem se os pontos forem zero!
+  if (nome === "" || pontos === 0) {
+    alert("Digite seu nome e comece a jogar antes de salvar!");
     return;
   }
 
+  // 1. EMPACOTANDO OS DADOS
   let dadosDoJogo = {
     jogador: nome,
     score: pontos,
     pps: pontosPorSegundo,
-    custos: [custoUpg1, custoUpg2, custoUpg3],
-    ultimaAtualizacao: new Date(),
+    nomeDoJogo: "Clicker de Tecnologia", // ATENÇÃO: Troque isso para o nome real do seu jogo!
   };
 
-  banco
-    .collection("ranking")
-    .doc(nome)
+  // 2. SALVA NO SEU BANCO (Para o seu ranking individual funcionar)
+  banco.collection("ranking").doc(nome).set(dadosDoJogo);
+
+  // 3. SALVA NO BANCO DO PROFESSOR (Para aparecer na TV da sala)
+  // Criamos um ID único juntando seu nome e o nome do seu jogo
+  let idUnico = nome + "_Multiverso";
+  bancoMultiverso
+    .collection("ranking_global")
+    .doc(idUnico)
     .set(dadosDoJogo)
-    .then(() => {
-      console.log("Progresso salvo na nuvem!");
-    })
     .catch((erro) => {
-      console.error("Erro no Firebase:", erro);
+      console.error("Erro ao enviar para o Multiverso:", erro);
     });
 }
 
-// AUTO-SAVE: Roda a cada 30 segundos
+// AUTO-SAVE: Roda a cada 05 segundos
 setInterval(function () {
   salvarJogo();
-}, 30000);
+}, 5000);
 
 function carregarRanking() {
   let lista = document.getElementById("lista-ranking");
